@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enterprise Payroll Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+        }
+
+        .nav-pills .nav-link {
+            color: #64748b;
+            font-weight: 500;
+            border-radius: 8px;
+            padding: 10px 20px;
+            transition: all 0.2s ease;
+        }
+
+            .nav-pills .nav-link.active {
+                background-color: #4f46e5 !important;
+                color: #fff !important;
+            }
+
+            .nav-pills .nav-link:hover:not(.active) {
+                background-color: #f1f5f9;
+                color: #334155;
+            }
+
+        .table-header-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .table-name-badge {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            padding: 10px 14px;
+            font-size: 0.95rem;
+            transition: all 0.15s ease-in-out;
+        }
+
+            .form-control:focus {
+                border-color: #818cf8;
+                box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15);
+            }
+
+        .btn-primary-custom {
+            background-color: #4f46e5;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 10px 20px;
+            color: white;
+        }
+
+            .btn-primary-custom:hover {
+                background-color: #4338ca;
+            }
+
+        .table th {
+            background-color: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 14px;
+        }
+
+        .table td {
+            padding: 14px;
+            vertical-align: middle;
+            font-size: 0.92rem;
+        }
+
+        .kpi-card {
+            border-left: 4px solid #4f46e5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid px-5 py-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+            <div>
+                <h3 class="fw-bold tracking-tight text-slate-900 m-0">Payroll & Workforce Portal</h3>
+                <p class="text-muted small m-0">Manage corporate database entities, variables, and process compensation metrics.</p>
+            </div>
+            <div id="liveClock" class="text-secondary fw-medium small"></div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card card-custom p-3 kpi-card"><span class="text-muted small fw-medium text-uppercase">Total Workforce</span><h3 class="fw-bold my-1 text-dark" id="kpiEmployees">0</h3></div></div>
+            <div class="col-md-3"><div class="card card-custom p-3 kpi-card" style="border-left-color: #0ea5e9;"><span class="text-muted small fw-medium text-uppercase">Logs Tracked</span><h3 class="fw-bold my-1 text-dark" id="kpiAttendance">0</h3></div></div>
+            <div class="col-md-3"><div class="card card-custom p-3 kpi-card" style="border-left-color: #f59e0b;"><span class="text-muted small fw-medium text-uppercase">Holidays Confirmed</span><h3 class="fw-bold my-1 text-dark" id="kpiHolidays">0</h3></div></div>
+            <div class="col-md-3"><div class="card card-custom p-3 kpi-card" style="border-left-color: #10b981;"><span class="text-muted small fw-medium text-uppercase">Net Disbursements</span><h3 class="fw-bold my-1 text-dark" id="kpiSalaries">$0</h3></div></div>
+        </div>
+
+        <div class="card card-custom p-2 mb-4 bg-white">
+            <ul class="nav nav-pills gap-1" id="payrollTabs" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#empTab" type="button"><i class="fas fa-users me-2"></i>Employees</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#attTab" type="button"><i class="fas fa-calendar-check me-2"></i>Attendance</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#holTab" type="button"><i class="fas fa-umbrella-beach me-2"></i>Holidays</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#adjTab" type="button"><i class="fas fa-sliders-h me-2"></i>Adjustments</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#payTab" type="button"><i class="fas fa-receipt me-2"></i>Payroll Slips</button></li>
+            </ul>
+        </div>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="empTab">
+                <div class="card card-custom p-4 bg-white">
+                    <div class="table-header-title">Database Target</div>
+                    <div class="table-name-badge"><i class="fas fa-server text-primary"></i> Table Schema: Employee</div>
+                    <form id="empForm" class="row g-3 mb-4 p-3 bg-light rounded border">
+                        <input type="hidden" id="empEditId">
+                        <div class="col-md-2"><label for="employeeId">Employee ID</label><input type="number" id="employeeId" class="form-control" placeholder="e.g. 1001" required></div>
+                        <div class="col-md-3"><label for="fullName">Full Name</label><input type="text" id="fullName" class="form-control" placeholder="John Doe" required></div>
+                        <div class="col-md-3"><label for="position">Corporate Position</label><input type="text" id="position" class="form-control" placeholder="Senior Architect" required></div>
+                        <div class="col-md-2"><label for="basicSalary">Basic Salary (USD)</label><input type="number" id="basicSalary" class="form-control" placeholder="5000" required></div>
+                        <div class="col-md-2"><label for="hireDate">Hire Date</label><input type="date" id="hireDate" class="form-control" required></div>
+                        <div class="col-md-12 text-end"><button type="submit" id="empBtn" class="btn btn-primary-custom px-4"><i class="fas fa-save me-2"></i>Save Record</button></div>
+                    </form>
+                    <div class="table-responsive border rounded"><table class="table table-hover mb-0"><thead><tr><th>Employee ID</th><th>Full Name</th><th>Position</th><th>Basic Salary</th><th>Hire Date</th><th class="text-center">Operations</th></tr></thead><tbody id="empTableBody"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="attTab">
+                <div class="card card-custom p-4 bg-white">
+                    <div class="table-header-title">Database Target</div>
+                    <div class="table-name-badge"><i class="fas fa-server text-info"></i> Table Schema: Attendance</div>
+                    <form id="attForm" class="row g-3 mb-4 p-3 bg-light rounded border">
+                        <input type="hidden" id="attEditId">
+                        <div class="col-md-2"><label for="attEmpId">Employee ID</label><input type="number" id="attEmpId" class="form-control" placeholder="Target ID" required></div>
+                        <div class="col-md-3"><label for="attMonth">Payroll Month</label><input type="month" id="attMonth" class="form-control" required></div>
+                        <div class="col-md-2"><label for="totalWorkingDays">Total Working Days</label><input type="number" id="totalWorkingDays" class="form-control" placeholder="e.g. 22" required></div>
+                        <div class="col-md-2"><label for="presentDays">Present Days</label><input type="number" id="presentDays" class="form-control" placeholder="e.g. 20" required></div>
+                        <div class="col-md-2"><label for="absentDays">Absent Days</label><input type="number" id="absentDays" class="form-control" placeholder="e.g. 2" required></div>
+                        <div class="col-md-1 d-flex align-items-end"><button type="submit" id="attBtn" class="btn btn-info text-white w-100 py-2"><i class="fas fa-save"></i></button></div>
+                    </form>
+                    <div class="table-responsive border rounded"><table class="table table-hover mb-0"><thead><tr><th>ID Reference</th><th>Emp ID</th><th>Payroll Month</th><th>Total Days</th><th>Present</th><th>Absent</th><th class="text-center">Operations</th></tr></thead><tbody id="attTableBody"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="holTab">
+                <div class="card card-custom p-4 bg-white">
+                    <div class="table-header-title">Database Target</div>
+                    <div class="table-name-badge"><i class="fas fa-server text-warning"></i> Table Schema: Holiday</div>
+                    <form id="holForm" class="row g-3 mb-4 p-3 bg-light rounded border">
+                        <input type="hidden" id="holEditId">
+                        <div class="col-md-3"><label for="holidayDate">Holiday Date</label><input type="date" id="holidayDate" class="form-control" required></div>
+                        <div class="col-md-7"><label for="description">Holiday Description</label><input type="text" id="description" class="form-control" placeholder="e.g. National Day" required></div>
+                        <div class="col-md-2 d-flex align-items-end"><button type="submit" id="holBtn" class="btn btn-warning text-dark w-100 py-2 fw-medium"><i class="fas fa-plus me-2"></i>Append</button></div>
+                    </form>
+                    <div class="table-responsive border rounded"><table class="table table-hover mb-0"><thead><tr><th>Holiday ID</th><th>Holiday Date</th><th>Description</th><th class="text-center">Operations</th></tr></thead><tbody id="holTableBody"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="adjTab">
+                <div class="card card-custom p-4 bg-white">
+                    <div class="table-header-title">Database Target</div>
+                    <div class="table-name-badge"><i class="fas fa-server text-secondary"></i> Table Schema: AllowancesAndDeduction</div>
+                    <form id="adjForm" class="row g-3 mb-4 p-3 bg-light rounded border">
+                        <input type="hidden" id="adjEditId">
+                        <div class="col-md-2"><label for="adjEmpId">Employee ID</label><input type="number" id="adjEmpId" class="form-control" placeholder="Target ID" required></div>
+                        <div class="col-md-3"><label for="adjMonth">Payroll Month</label><input type="month" id="adjMonth" class="form-control" required></div>
+                        <div class="col-md-3"><label for="allowanceAmount">Allowance Amount ($)</label><input type="number" id="allowanceAmount" class="form-control" placeholder="0" required></div>
+                        <div class="col-md-3"><label for="deductionAmount">Deduction Amount ($)</label><input type="number" id="deductionAmount" class="form-control" placeholder="0" required></div>
+                        <div class="col-md-1 d-flex align-items-end"><button type="submit" id="adjBtn" class="btn btn-secondary w-100 py-2"><i class="fas fa-save"></i></button></div>
+                    </form>
+                    <div class="table-responsive border rounded"><table class="table table-hover mb-0"><thead><tr><th>Adjustment ID</th><th>Emp ID</th><th>Payroll Month</th><th>Allowance</th><th>Deduction</th><th class="text-center">Operations</th></tr></thead><tbody id="adjTableBody"></tbody></table></div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="payTab">
+                <div class="card card-custom p-4 bg-white">
+                    <div class="table-header-title">Database Target</div>
+                    <div class="table-name-badge"><i class="fas fa-server text-success"></i> Table Schema: PayrollSlip</div>
+
+                    <form id="payForm" class="row g-3 mb-4 p-3 bg-light rounded border align-items-end">
+                        <input type="hidden" id="payEditId">
+                        <div class="col-md-2">
+                            <label for="calcEmpId">Employee ID</label>
+                            <input type="number" id="calcEmpId" class="form-control" placeholder="ID" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="calcMonth">Payroll Month</label>
+                            <input type="month" id="calcMonth" class="form-control" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="calcBasicSalary">Basic Salary ($)</label>
+                            <input type="number" id="calcBasicSalary" class="form-control" placeholder="Basic Salary" required>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="calcAllowance">Allowance ($)</label>
+                            <input type="number" id="calcAllowance" class="form-control" placeholder="Allowance" value="0">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="calcDeduction">Deduction ($)</label>
+                            <input type="number" id="calcDeduction" class="form-control" placeholder="Deduction" value="0">
+                        </div>
+                        <div class="col-md-2 d-flex gap-2">
+                            <button type="button" class="btn btn-info text-white w-50 py-2" onclick="calculatePayroll()" title="Auto Pull Data from Other Tabs"><i class="fas fa-calculator"></i></button>
+                            <button type="submit" id="paySubmitBtn" class="btn btn-success w-50 py-2" title="Save / Update Slip"><i class="fas fa-save"></i></button>
+                        </div>
+                    </form>
+
+                    <div class="table-responsive border rounded">
+                        <table class="table table-hover mb-0">
+                            <thead><tr><th>Slip ID</th><th>Emp ID</th><th>Month</th><th>Basic Salary</th><th>Attendance Log</th><th>Allowances / Deductions</th><th class="fw-bold">Net Salary</th><th class="text-center">Operations</th></tr></thead>
+                            <tbody id="payTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let employees = JSON.parse(localStorage.getItem('employees')) || [];
+        let attendances = JSON.parse(localStorage.getItem('attendances')) || [];
+        let holidays = JSON.parse(localStorage.getItem('holidays')) || [];
+        let adjustments = JSON.parse(localStorage.getItem('adjustments')) || [];
+        let payrollSlips = JSON.parse(localStorage.getItem('payrollSlips')) || [];
+
+        $(document).ready(function () {
+            // Live Date Counter
+            setInterval(() => {
+                const date = new Date();
+                $("#liveClock").html(`<i class="far fa-clock me-1"></i> System Active Session: ${date.toLocaleString()}`);
+            }, 1000);
+
+            renderAllTables();
+
+            // 1️⃣ Employee Model CRUD
+            $("#empForm").on("submit", function (e) {
+                e.preventDefault();
+                let editId = $("#empEditId").val();
+                let empData = {
+                    employeeId: parseInt($("#employeeId").val()),
+                    fullName: $("#fullName").val(),
+                    position: $("#position").val(),
+                    basicSalary: parseFloat($("#basicSalary").val()),
+                    hireDate: $("#hireDate").val()
+                };
+
+                if (editId) {
+                    let index = employees.findIndex(x => x.employeeId == editId);
+                    employees[index] = empData;
+                    $("#empEditId").val('');
+                    $("#empBtn").html('<i class="fas fa-save me-2"></i>Save Record').removeClass('btn-warning text-dark').addClass('btn-primary-custom');
+                    $("#employeeId").removeAttr('readonly');
+                } else {
+                    if (employees.some(x => x.employeeId == empData.employeeId)) return alert("Exception: Employee ID Key collision.");
+                    employees.push(empData);
+                }
+                saveAndRefresh('employees', employees);
+                $("#empForm")[0].reset();
+            });
+
+            // 2️⃣ Attendance Model CRUD
+            $("#attForm").on("submit", function (e) {
+                e.preventDefault();
+                let editId = $("#attEditId").val();
+                let attData = {
+                    attendanceId: editId ? parseInt(editId) : Date.now(),
+                    employeeId: parseInt($("#attEmpId").val()),
+                    payrollMonth: $("#attMonth").val(),
+                    totalWorkingDays: parseInt($("#totalWorkingDays").val()),
+                    presentDays: parseInt($("#presentDays").val()),
+                    absentDays: parseInt($("#absentDays").val())
+                };
+
+                if (!employees.some(x => x.employeeId == attData.employeeId)) return alert("Foreign Key Constraint Error: EmployeeId target matching absent.");
+
+                if (editId) {
+                    let index = attendances.findIndex(x => x.attendanceId == editId);
+                    attendances[index] = attData;
+                    $("#attEditId").val('');
+                    $("#attBtn").html('<i class="fas fa-save"></i>').removeClass('btn-warning text-dark').addClass('btn-info text-white');
+                } else {
+                    attendances.push(attData);
+                }
+                saveAndRefresh('attendances', attendances);
+                $("#attForm")[0].reset();
+            });
+
+            // 3️⃣ Holiday Model CRUD
+            $("#holForm").on("submit", function (e) {
+                e.preventDefault();
+                let editId = $("#holEditId").val();
+                let holData = {
+                    holidayId: editId ? parseInt(editId) : Date.now(),
+                    holidayDate: $("#holidayDate").val(),
+                    description: $("#description").val()
+                };
+
+                if (editId) {
+                    let index = holidays.findIndex(x => x.holidayId == editId);
+                    holidays[index] = holData;
+                    $("#holEditId").val('');
+                    $("#holBtn").html('<i class="fas fa-plus me-2"></i>Append').removeClass('btn-warning').addClass('btn-warning');
+                } else {
+                    holidays.push(holData);
+                }
+                saveAndRefresh('holidays', holidays);
+                $("#holForm")[0].reset();
+            });
+
+            // 4️⃣ AllowancesAndDeduction Model CRUD
+            $("#adjForm").on("submit", function (e) {
+                e.preventDefault();
+                let editId = $("#adjEditId").val();
+                let adjData = {
+                    adjustmentId: editId ? parseInt(editId) : Date.now(),
+                    employeeId: parseInt($("#adjEmpId").val()),
+                    payrollMonth: $("#adjMonth").val(),
+                    allowanceAmount: parseFloat($("#allowanceAmount").val()),
+                    deductionAmount: parseFloat($("#deductionAmount").val())
+                };
+
+                if (!employees.some(x => x.employeeId == adjData.employeeId)) return alert("Foreign Key Constraint Error: EmployeeId target matching absent.");
+
+                if (editId) {
+                    let index = adjustments.findIndex(x => x.adjustmentId == editId);
+                    adjustments[index] = adjData;
+                    $("#adjEditId").val('');
+                    $("#adjBtn").html('<i class="fas fa-save"></i>').removeClass('btn-warning text-dark').addClass('btn-secondary');
+                } else {
+                    adjustments.push(adjData);
+                }
+                saveAndRefresh('adjustments', adjustments);
+                $("#adjForm")[0].reset();
+            });
+
+            // 5️⃣ Payroll Form Submit handler (Create and Update)
+            $("#payForm").on("submit", function (e) {
+                e.preventDefault();
+                let editId = $("#payEditId").val();
+                let empId = parseInt($("#calcEmpId").val());
+                let month = $("#calcMonth").val();
+                let basic = parseFloat($("#calcBasicSalary").val());
+                let allow = parseFloat($("#calcAllowance").val()) || 0;
+                let deduct = parseFloat($("#calcDeduction").val()) || 0;
+
+                if (!employees.some(x => x.employeeId == empId)) return alert("Error: Employee ID does not exist.");
+
+                let netSalary = basic + allow - deduct;
+
+                let slipData = {
+                    payrollId: editId ? parseInt(editId) : Date.now(),
+                    employeeId: empId,
+                    payrollMonth: month,
+                    basicSalary: basic,
+                    totalWorkingDays: 22,
+                    presentDays: 22,
+                    absentDays: 0,
+                    allowanceAmount: allow,
+                    deductionAmount: deduct,
+                    netSalary: netSalary,
+                    paymentDate: new Date().toISOString().split('T')[0]
+                };
+
+                // အကယ်၍ Attendance ရှိခဲ့ရင် ယှဉ်တွက်ချက်မှု ထည့်ပေးခြင်း
+                let att = attendances.find(x => x.employeeId == empId && x.payrollMonth == month);
+                if (att) {
+                    slipData.totalWorkingDays = att.totalWorkingDays;
+                    slipData.presentDays = att.presentDays;
+                    slipData.absentDays = att.absentDays;
+                }
+
+                if (editId) {
+                    let index = payrollSlips.findIndex(x => x.payrollId == editId);
+                    payrollSlips[index] = slipData;
+                    $("#payEditId").val('');
+                    $("#paySubmitBtn").html('<i class="fas fa-save"></i>').removeClass('btn-warning text-dark').addClass('btn-success');
+                } else {
+                    payrollSlips.push(slipData);
+                }
+
+                saveAndRefresh('payrollSlips', payrollSlips);
+                $("#payForm")[0].reset();
+            });
+        });
+
+        // ⚙️ Auto Fetch & Calculate Engine
+        function calculatePayroll() {
+            let empId = parseInt($("#calcEmpId").val());
+            let month = $("#calcMonth").val();
+
+            if (!empId || !month) return alert("System prompt: Provide structural relational targets.");
+
+            let emp = employees.find(x => x.employeeId == empId);
+            let att = attendances.find(x => x.employeeId == empId && x.payrollMonth == month);
+            let adj = adjustments.find(x => x.employeeId == empId && x.payrollMonth == month);
+
+            if (!emp) return alert("System Execution Failure: Relational mapping matching Employee record not found.");
+            if (!att) return alert("System Execution Failure: Relational mapping matching Attendance log missing.");
+
+            let allowance = adj ? adj.allowanceAmount : 0;
+            let deduction = adj ? adj.deductionAmount : 0;
+            let absentFine = att.absentDays > 0 ? Math.round((emp.basicSalary / att.totalWorkingDays) * att.absentDays) : 0;
+
+            // Form Fields ထဲကို Data အလိုအလျောက် ဆွဲထုတ်ပေးခြင်း
+            $("#calcBasicSalary").val(emp.basicSalary);
+            $("#calcAllowance").val(allowance);
+            $("#calcDeduction").val(deduction + absentFine);
+            alert("Data metrics synced to fields. Click the Save button to commit to LocalStorage.");
+        }
+
+        // 🔄 Dynamic Tables Render Engine
+        function renderAllTables() {
+            $("#kpiEmployees").text(employees.length);
+            $("#kpiAttendance").text(attendances.length);
+            $("#kpiHolidays").text(holidays.length);
+            let calculatedDisbursements = payrollSlips.reduce((sum, currentObj) => sum + currentObj.netSalary, 0);
+            $("#kpiSalaries").text(`$${calculatedDisbursements.toLocaleString()}`);
+
+            // Employee Table
+            let empRows = "";
+            $.each(employees, function (i, x) {
+                empRows += `<tr><td><span class="badge bg-light text-dark border font-monospace">${x.employeeId}</span></td><td class="fw-semibold">${x.fullName}</td><td>${x.position}</td><td class="fw-medium text-secondary">$${x.basicSalary.toLocaleString()}</td><td>${x.hireDate}</td>
+                    <td class="text-center"><button class="btn btn-outline-warning btn-sm me-2" onclick="editEmp(${x.employeeId})"><i class="fas fa-edit"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteItem('employees', ${x.employeeId})"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            $("#empTableBody").html(empRows);
+
+            // Attendance Table
+            let attRows = "";
+            $.each(attendances, function (i, x) {
+                attRows += `<tr><td>${i + 1}</td><td><span class="badge bg-light text-dark border">${x.employeeId}</span></td><td>${x.payrollMonth}</td><td>${x.totalWorkingDays}</td><td class="text-success">${x.presentDays}</td><td class="text-danger">${x.absentDays}</td>
+                    <td class="text-center"><button class="btn btn-outline-warning btn-sm me-2" onclick="editAtt(${x.attendanceId})"><i class="fas fa-edit"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteItem('attendances', ${x.attendanceId})"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            $("#attTableBody").html(attRows);
+
+            // Holiday Table
+            let holRows = "";
+            $.each(holidays, function (i, x) {
+                holRows += `<tr><td>${i + 1}</td><td>${x.holidayDate}</td><td class="fw-medium text-dark">${x.description}</td>
+                    <td class="text-center"><button class="btn btn-outline-warning btn-sm me-2" onclick="editHol(${x.holidayId})"><i class="fas fa-edit"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteItem('holidays', ${x.holidayId})"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            $("#holTableBody").html(holRows);
+
+            // Adjustments Table
+            let adjRows = "";
+            $.each(adjustments, function (i, x) {
+                adjRows += `<tr><td>${i + 1}</td><td><span class="badge bg-light text-dark border">${x.employeeId}</span></td><td>${x.payrollMonth}</td><td class="text-success">+$${x.allowanceAmount.toLocaleString()}</td><td class="text-danger">-$${x.deductionAmount.toLocaleString()}</td>
+                    <td class="text-center"><button class="btn btn-outline-warning btn-sm me-2" onclick="editAdj(${x.adjustmentId})"><i class="fas fa-edit"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteItem('adjustments', ${x.adjustmentId})"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            $("#adjTableBody").html(adjRows);
+
+            // Payroll Slips Table (Edit Operations ပါဝင်လာသည်)
+            let payRows = "";
+            $.each(payrollSlips, function (i, x) {
+                payRows += `<tr><td><small class="font-monospace text-muted">${x.payrollId}</small></td><td><span class="badge bg-light text-dark border">${x.employeeId}</span></td><td>${x.payrollMonth}</td><td>$${x.basicSalary.toLocaleString()}</td><td>${x.presentDays}/${x.totalWorkingDays} (<span class="text-danger">${x.absentDays} Abs</span>)</td><td><span class="text-success">+$${x.allowanceAmount}</span> / <span class="text-danger">-$${x.deductionAmount}</span></td><td class="text-success fw-bold">$${x.netSalary.toLocaleString()}</td>
+                    <td class="text-center"><button class="btn btn-outline-warning btn-sm me-2" onclick="editPay(${x.payrollId})"><i class="fas fa-edit"></i></button><button class="btn btn-outline-danger btn-sm" onclick="deleteItem('payrollSlips', ${x.payrollId})"><i class="fas fa-trash"></i></button></td></tr>`;
+            });
+            $("#payTableBody").html(payRows);
+        }
+
+        // 🛠️ Edit Binder Operations
+        function editEmp(id) {
+            let x = employees.find(p => p.employeeId == id);
+            $("#empEditId").val(x.employeeId); $("#employeeId").val(x.employeeId).attr('readonly', 'readonly');
+            $("#fullName").val(x.fullName); $("#position").val(x.position); $("#basicSalary").val(x.basicSalary); $("#hireDate").val(x.hireDate);
+            $("#empBtn").text('Update Record').removeClass('btn-primary-custom').addClass('btn-warning text-dark');
+        }
+        function editAtt(id) {
+            let x = attendances.find(p => p.attendanceId == id);
+            $("#attEditId").val(x.attendanceId); $("#attEmpId").val(x.employeeId); $("#attMonth").val(x.payrollMonth); $("#totalWorkingDays").val(x.totalWorkingDays); $("#presentDays").val(x.presentDays); $("#absentDays").val(x.absentDays);
+            $("#attBtn").html('<i class="fas fa-edit"></i>').removeClass('btn-info text-white').addClass('btn-warning text-dark');
+        }
+        function editHol(id) {
+            let x = holidays.find(p => p.holidayId == id);
+            $("#holEditId").val(x.holidayId); $("#holidayDate").val(x.holidayDate); $("#description").val(x.description);
+            $("#holBtn").text('Edit Record').removeClass('btn-warning').addClass('btn-warning text-dark');
+        }
+        function editAdj(id) {
+            let x = adjustments.find(p => p.adjustmentId == id);
+            $("#adjEditId").val(x.adjustmentId); $("#adjEmpId").val(x.employeeId); $("#adjMonth").val(x.payrollMonth); $("#allowanceAmount").val(x.allowanceAmount); $("#deductionAmount").val(x.deductionAmount);
+            $("#adjBtn").html('<i class="fas fa-edit"></i>').removeClass('btn-secondary').addClass('btn-warning text-dark');
+        }
+        function editPay(id) {
+            let x = payrollSlips.find(p => p.payrollId == id);
+            $("#payEditId").val(x.payrollId); $("#calcEmpId").val(x.employeeId); $("#calcMonth").val(x.payrollMonth);
+            $("#calcBasicSalary").val(x.basicSalary); $("#calcAllowance").val(x.allowanceAmount); $("#calcDeduction").val(x.deductionAmount);
+            $("#paySubmitBtn").html('<i class="fas fa-edit"></i>').removeClass('btn-success').addClass('btn-warning text-dark');
+        }
+
+        // 🗑️ Delete Handlers
+        function deleteItem(key, id) {
+            if (!confirm("Are you sure you want to drop this database record?")) return;
+            if (key === 'employees') { employees = employees.filter(x => x.employeeId != id); localStorage.setItem('employees', JSON.stringify(employees)); }
+            if (key === 'attendances') { attendances = attendances.filter(x => x.attendanceId != id); localStorage.setItem('attendances', JSON.stringify(attendances)); }
+            if (key === 'holidays') { holidays = holidays.filter(x => x.holidayId != id); localStorage.setItem('holidays', JSON.stringify(holidays)); }
+            if (key === 'adjustments') { adjustments = adjustments.filter(x => x.adjustmentId != id); localStorage.setItem('adjustments', JSON.stringify(adjustments)); }
+            if (key === 'payrollSlips') { payrollSlips = payrollSlips.filter(x => x.payrollId != id); localStorage.setItem('payrollSlips', JSON.stringify(payrollSlips)); }
+            renderAllTables();
+        }
+
+        function saveAndRefresh(key, array) {
+            localStorage.setItem(key, JSON.stringify(array));
+            renderAllTables();
+        }
+    </script>
+</body>
+</html>
